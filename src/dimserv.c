@@ -1,6 +1,6 @@
-/*
- * A very dim web server.
- */
+//For usleep to be defined - http://stackoverflow.com/questions/10053788/implicit-declaration-of-function-usleep
+#define _BSD_SOURCE
+
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -124,12 +124,12 @@ send_header_t *generate_send_header(char * status, char * content_type) {
 /*
  * Generate MIME type from file extension
  */
-char *get_mime_type(char * filename) {
+char *get_mime_type(char *filename) {
 
-    char * mime_type;
-    char *ext;
+    char *mime_type;
+    char *ext = strstr(filename, ".");
 
-    if ((ext = strstr(filename, ".")) == NULL) {
+    if (ext == NULL) {
         mime_type = "text/unknown";
     } else if (!strcmp(ext, ".html")) {
         mime_type = "text/html";
@@ -149,7 +149,7 @@ char *get_mime_type(char * filename) {
 /*
  * Load MIME types from configuration file
  */
-void load_mime_types(char ** mime_types) {
+void load_mime_types(char **mime_types) {
 
     // Open MIME configuration file
     FILE *fp;
@@ -174,12 +174,12 @@ int main(int argc, char **argv) {
     /* Server variables */
     char recv_header_buffer[HEADER_SIZE];
     char send_header_buffer[HEADER_SIZE];
-    char **mime_types[2];
+    //char **mime_types[2];
     int listen_fd;
     int comm_fd;
     int server_port = SERVER_PORT;
     int _true = 1;
-    int _false = 0;
+    //int _false = 0;
     struct sockaddr_in servaddr;
     struct stat _stat;
     recv_header_t * recv_header;
@@ -190,6 +190,7 @@ int main(int argc, char **argv) {
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htons(INADDR_ANY);
     servaddr.sin_port = htons(server_port);
+
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     /* Set socket re-use option */
